@@ -20,9 +20,9 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Status</th>
-                                <th>Created At</th>
-                                <th width="110">Action</th>
+                                <th width="80">Status</th>
+                                <th width="80">Created At</th>
+                                <th width="120">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,9 +32,9 @@
                                         <td>{{ $profession->name }}</td>
                                         <td>
                                             @if($profession->status == 1)
-                                                <i class="fas fa-lightbulb" style="color:green;"></i>
+                                                <i class="fas fa-lightbulb" style="color:green;"></i> Active
                                             @else
-                                                <i class="fas fa-lightbulb" style="color:red;"></i>
+                                                <i class="fas fa-lightbulb" style="color:red;"></i> In-Active
                                             @endif
                                         </td>
                                         <td>{{ date( 'd/m/Y', strtotime($profession->created_at)) }}</td>
@@ -56,7 +56,7 @@
                                 @endforeach
                             @else
                                 <tr><td colspan="4">No profession found!</td></tr>
-                            @endif                        
+                            @endif
                         </tbody>
                         <tfoot>
                             <tr>

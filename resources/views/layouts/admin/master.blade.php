@@ -6,7 +6,7 @@
   <title>@yield('pageTitle') :: Dating App</title>
 
   <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"> -->
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{!! URL::asset('assets/admin/plugins/fontawesome-free/css/all.min.css') !!}">
   <!-- DataTables -->
@@ -102,7 +102,7 @@
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": ["csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#datas-list_wrapper .col-md-6:eq(0)');
-    
+
   });
 </script>
 </body>

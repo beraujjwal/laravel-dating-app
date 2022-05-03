@@ -4,7 +4,7 @@
 @section('content')
 <div class="card card-default">
     <div class="card-header">
-    <h3 class="card-title">@yield('pageTitle')</h3>
+        <h3 class="card-title">@yield('pageTitle')</h3>
 
         <div class="card-tools">
             <a href="{{ route('admin.genders') }}" class="btn btn-success"><i class="fas fa-arrow-circle-left"></i> Back</a>
@@ -17,39 +17,36 @@
         </div>
         @csrf
         <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Name"
-                            value="{{ old('name') }}">
-                    @error('name') <div class="input-error"> {{ $message }} </div> @enderror
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Name"
+                                value="{{ old('name') }}">
+                        @error('name') <div class="input-error"><i class="icon fas fa-exclamation-triangle"></i> {{ $message }} </div> @enderror
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Status</label>
-                    <select name="status" class="form-control select2" style="width: 100%;">
-                        <option value="0">In-Active</option>
-                        <option value="1">Active</option>
-                    </select>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-control select2" style="width: 100%;">
+                            <option>Choose Status</option>
+                            <option value="0">In-Active</option>
+                            <option value="1">Active</option>
+                        </select>
+                        @error('status') <div class="input-error"><i class="icon fas fa-exclamation-triangle"></i> {{ $message }} </div> @enderror
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
+        <!-- /.card-body -->
         <div class="card-footer">
-            <button type="submit" class="btn btn-success">Save <i class="fas
-                fa-arrow-circle-right"></i></button>
+            <button type="submit" class="btn btn-success">{{ __('common.save') }}  <i class="fas fa-save"></i></button>
             <button type="reset" class="btn btn-default float-right">Cancel</button>
         </div>
     </form>
-    <!-- /.row -->
-    </div>
-    <!-- /.card-body -->
-    <div class="card-footer">
-    Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
-    the plugin.
-    </div>
+
 </div>
 @endsection

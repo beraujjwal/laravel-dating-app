@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Scopes\UserScope;
 
 
-use Laravel\Passport\HasApiTokens; 
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -56,7 +56,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
     /**
     * Boot the model.
     */
@@ -68,8 +68,22 @@ class User extends Authenticatable
             $user->status = false;
             $user->save();
         });
+
+        self::updated(function($user) {
+            $log = new \App\Log([
+              'type' => 'debug',
+              'message' => 'debug message'
+            ]);
+            $user->log($log);
+        });
     }
-    
+
+    public function getCreatedAtAttribute()
+    {
+        //return number_format($this->attributes['price']);
+        return date( 'd/m/Y', strtotime($this->attributes['created_at']));
+    }
+
     /**
      * The "booted" method of the model.
      *

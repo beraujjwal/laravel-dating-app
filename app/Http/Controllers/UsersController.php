@@ -28,7 +28,7 @@ class UsersController extends Controller
      */
     public function doLoginOrRegister(Request $request)  {
         try {
-            
+
             $rules = [
                 'provider_id'   => 'required',
                 'provider'      => 'required',
@@ -41,10 +41,10 @@ class UsersController extends Controller
                 $errors = [];
                 foreach ($validator->errors()->getMessages() as $item) {
                     array_push($errors, $item);
-                }                
-                return $this->sendError($errors, 'User login fail');    
+                }
+                return $this->sendError($errors, 'User login fail');
             }
-            
+
             $data = [
                 'password'      => Hash::make($request->input('provider_id')),
                 'status'        => true,
@@ -66,16 +66,16 @@ class UsersController extends Controller
 
             // Create a Personnal Access Token
             $tokenResult = $user->createToken('Personal Access Token');
-                
+
             // Store the created token
             $token = $tokenResult->token;
-            
+
             // Add a expiration date to the token
             $token->expires_at = Carbon::now()->addWeeks(1);
-            
+
             // Save the token to the user
             $token->save();
-            
+
             // Return a JSON object containing the token datas
             // You may format this object to suit your needs
             $response = [
@@ -140,9 +140,9 @@ class UsersController extends Controller
                 foreach ($validator->errors()->getMessages() as $item) {
                     array_push($errors, $item);
                 }
-                
+
                 return $this->sendError($errors, 'Invalid request sent');
-    
+
             }
 
             $user->name = $request->input( 'name' );
@@ -200,7 +200,7 @@ class UsersController extends Controller
      */
     public function login(Request $request) {
         if (Auth::guard('web')->check()) {
-            return redirect()->route('admin-dashboard');
+            return redirect()->route('admin.dashboard');
         }
         return view('admin.login');
     }
@@ -219,7 +219,8 @@ class UsersController extends Controller
         $data = $request->validate($rules);
         $login_type = filter_var($request->input('username'), FILTER_VALIDATE_EMAIL ) ? 'email' : 'phone';
         $request->merge([ $login_type => $request->input('username') ]);
-        if (Auth::guard('web')->attempt($request->only($login_type, 'password'))) {
+        $remember_me = $request->has('remember_me') ? true : false;
+        if (Auth::guard('web')->attempt($request->only($login_type, 'password'), $remember_me)) {
             //return redirect()->intended($this->redirectPath());
             $request->session()->flash('alert-success', 'User was successfully login!');
             return redirect()->route('admin.dashboard');
@@ -230,7 +231,7 @@ class UsersController extends Controller
     }
 
     /**
-     * @desc admin dashboard
+     * @desc admin user list
      * @param  Request  $request
      * @return void
      */
@@ -240,6 +241,75 @@ class UsersController extends Controller
         }
         $users = User::whereNotNull('provider')->get();
         return view('admin.users.list', compact('users'));
+    }
+
+    /**
+     * @desc admin user list by ajax request
+     * @param  Request  $request
+     * @return void
+     */
+    public function usersListbyAjax(Request $request)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // total number of rows per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = $search_arr['value']; // Search value
+        DB::connection()->enableQueryLog();
+
+        // Total records
+        $totalRecords = User::select('count(*) as allcount')->whereNotNull('provider')->count();
+        $totalRecordswithFilter = User::select('count(*) as allcount')->where('name', 'like', '%' . $searchValue . '%')->whereNotNull('provider')->count();
+
+        // Get records, also we have included search filter as well
+        $matchThese = ['users.name', 'like', '%' . $searchValue . '%', 'users.name', 'like', '%' . $searchValue . '%'];
+        $records = User::orderBy($columnName, $columnSortOrder)
+            ->where(function($query) use ($searchValue){
+                return $query
+                ->where('users.name', 'like', '%' . $searchValue . '%')
+                ->orWhere('users.email', 'like', '%' . $searchValue . '%')
+                ->orWhere('users.phone', 'like', '%' . $searchValue . '%');
+            })
+            ->whereNotNull('provider')
+            ->select('users.*')
+            ->skip($start)
+            ->take($rowperpage)
+            ->get();
+
+        $queries = DB::getQueryLog();
+        //return dd($queries);
+
+        $data_arr = array();
+
+        foreach ($records as $record) {
+
+            $data_arr[] = array(
+                "id"          => $record->id,
+                "name"        => $record->name,
+                "email"       => $record->email,
+                "phone"       => $record->phone,
+                "provider"    => $record->provider,
+                "status"      => $record->status,
+                "created_at"  => $record->created_at,
+            );
+        }
+
+        $response = array(
+            "draw"                  => intval($draw),
+            "iTotalRecords"         => $totalRecords,
+            "iTotalDisplayRecords"  => $totalRecordswithFilter,
+            "aaData"                => $data_arr,
+        );
+
+        echo json_encode($response);
     }
 
 
@@ -283,7 +353,7 @@ class UsersController extends Controller
         $customMessages = [
             'name.regex' => 'Invalid format in User name. Only letters and space.'
         ];
-        $request->validate([            
+        $request->validate([
             'name' => 'regex:/^[a-zA-Z ]*$/',
             'phone' => 'min:10|max:11|unique:users,phone,'.$user->id.',id',
             'email' => 'unique:users,email,'.$user->id.',id',

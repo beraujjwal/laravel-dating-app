@@ -23,14 +23,14 @@
                                 <th>Min</th>
                                 <th>Max</th>
                                 <th>Group</th>
-                                <th>Status</th>
-                                <th>Created At</th>
-                                <th width="110">Action</th>
+                                <th width="80">Status</th>
+                                <th width="80">Created At</th>
+                                <th width="120">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if(count($agegroups) > 0)
-                                @foreach($agegroups as $agegroup)                                    
+                                @foreach($agegroups as $agegroup)
                                     <tr>
                                         <td>{{ $agegroup->gender->name }}</td>
                                         <td>{{ $agegroup->min }}</td>
@@ -38,9 +38,9 @@
                                         <td>{{ $agegroup->group }}</td>
                                         <td>
                                             @if($agegroup->status == 1)
-                                                <i class="fas fa-lightbulb" style="color:green;"></i>
+                                                <i class="fas fa-lightbulb" style="color:green;"></i> Active
                                             @else
-                                                <i class="fas fa-lightbulb" style="color:red;"></i>
+                                                <i class="fas fa-lightbulb" style="color:red;"></i> In-Active
                                             @endif
                                         </td>
                                         <td>{{ date( 'd/m/Y', strtotime($agegroup->created_at)) }}</td>
@@ -62,7 +62,7 @@
                                 @endforeach
                             @else
                                 <tr><td colspan="4">No age group found!</td></tr>
-                            @endif                        
+                            @endif
                         </tbody>
                         <tfoot>
                             <tr>

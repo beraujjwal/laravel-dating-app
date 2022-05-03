@@ -14,33 +14,35 @@
                 <div class="flash-message">
                     @include('layouts.admin.includes.flash')
                 </div>
-                    <table id="datas-list" class="table table-bordered table-striped">
+                    <table id="usersTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th>#ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
-                                <th>Status</th>
                                 <th>Provider</th>
-                                <th>Created At</th>
-                                <th width="110">Action</th>
+                                <th width="80">Status</th>
+                                <th width="100">Register At</th>
+                                <th width="120">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <!--<tbody>
                             @if(count($users) > 0)
                                 @foreach($users as $user)
                                     <tr>
+                                        <td>{{ $user->id }}</td>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->phone }}</td>
                                         <td>{{ $user->email }}</td>
+                                        <td>{{ $user->provider }}</td>
                                         <td>
                                             @if($user->status == 1)
-                                                <i class="fas fa-lightbulb" style="color:green;"></i>
+                                                <i class="fas fa-lightbulb" style="color:green;"></i> Active
                                             @else
-                                                <i class="fas fa-lightbulb" style="color:red;"></i>
+                                                <i class="fas fa-lightbulb" style="color:red;"></i> In-Active
                                             @endif
                                         </td>
-                                        <td>{{ $user->provider }}</td>
                                         <td>{{ date( 'd/m/Y', strtotime($user->created_at)) }}</td>
                                         <td>
                                             <a href="{{ route('admin.user-edit', ['user' => $user->id]) }}">
@@ -60,21 +62,41 @@
                                 @endforeach
                             @else
                                 <tr><td colspan="6">No user found!</td></tr>
-                            @endif                        
+                            @endif
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Provider</th>
-                                <th>Created At</th>
-                                <th>Action</th>
+                              <th>#ID</th>
+                              <th>Name</th>
+                              <th>Phone</th>
+                              <th>Email</th>
+                              <th>Provider</th>
+                              <th>Status</th>
+                              <th>Created At</th>
+                              <th>Action</th>
                             </tr>
-                        </tfoot>
+                        </tfoot>-->
                     </table>
                 </div>
+                <script type="text/javascript">
+                  $(document).ready(function(){
+                    // DataTable
+                    $('#usersTable').DataTable({
+                       processing: true,
+                       serverSide: true,
+                       ajax: "{{route('admin.users-by-ajax')}}",
+                       columns: [
+                          { data: 'id' },
+                          { data: 'name' },
+                          { data: 'email' },
+                          { data: 'phone' },
+                          { data: 'provider' },
+                          { data: 'status' },
+                          { data: 'created_at' },
+                       ]
+                    });
+                  });
+                </script>
                 <!-- /.card-body -->
             </div>
         <!-- /.card -->

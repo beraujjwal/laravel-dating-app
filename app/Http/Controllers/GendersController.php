@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use DB;
 
+use App\Http\Requests\StoreGenderRequest;
+
 use App\Models\Gender;
 
 class GendersController extends Controller
@@ -59,16 +61,15 @@ class GendersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function genderStore(Request $request)
+    public function genderStore(StoreGenderRequest $request)
     {
         
         try {
             if (!Auth::guard('web')->check()) {
                 return redirect()->route('admin-login');
             }
-            $request->validate([
-                'name'=>'required|string',
-            ]);
+            
+            $validated = $request->validated();
 
             $gender = Gender::create([
                 'name' => $request->input('name'),
